@@ -32,6 +32,7 @@ private:
 
     void TrickleDownMin(int i);
     void TrickleDownMax(int i);
+    void BuildTree();
 public:
     void TrickleDown(int i);
 };
@@ -101,7 +102,7 @@ void MinMaxHeap<T>::TrickleDownMax(int i)
         // pair : (index, value)
         auto my_comp = [](const std::pair<int,T>& z1, const std::pair<int,T>& z2)
         {
-            return z1.second > z2.second;
+            return z1.second < z2.second;
         };
 
         std::priority_queue<std::pair<int,T>,
@@ -121,22 +122,28 @@ void MinMaxHeap<T>::TrickleDownMax(int i)
             pq.push({RightRightChild(i),allocator(RightRightChild(i))});
         
         const auto& z = pq.top();
-        int MinIndex = z.first;
+        int MaxIndex = z.first;
 
-        if(Parent(MinIndex)!=i) // is a grandchild
+        if(Parent(MaxIndex)!=i) // is a grandchild
         {
-            if(allocator(MinIndex) < allocator(i))
+            if(allocator(MaxIndex) > allocator(i))
             {
-                std::swap(allocator(MinIndex),allocator(i));
-                if(allocator(MinIndex) > allocator(Parent(MinIndex)))
-                    std::swap(allocator(MinIndex),allocator(Parent(MinIndex)));
-                TrickleDownMin(MinIndex);
+                std::swap(allocator(MaxIndex),allocator(i));
+                if(allocator(MaxIndex) < allocator(Parent(MaxIndex)))
+                    std::swap(allocator(MaxIndex),allocator(Parent(MaxIndex)));
+                TrickleDownMax(MaxIndex);
             }
         }
         else // is a child
         {
-            if(allocator(MinIndex) < allocator(i))
-                std::swap(allocator(MinIndex),allocator(i));
+            if(allocator(MaxIndex) > allocator(i))
+                std::swap(allocator(MaxIndex),allocator(i));
         }
     }
+}
+
+template<typename T>
+void MinMaxHeap<T>::BuildTree()
+{
+    
 }
