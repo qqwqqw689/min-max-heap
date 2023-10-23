@@ -33,6 +33,7 @@ private:
     void TrickleDownMin(int i);
     void TrickleDownMax(int i);
     void BuildTree();
+    MinMaxHeap(T* p, int n); // n : number of elements in array
 public:
     void TrickleDown(int i);
 };
@@ -145,5 +146,20 @@ void MinMaxHeap<T>::TrickleDownMax(int i)
 template<typename T>
 void MinMaxHeap<T>::BuildTree()
 {
-    
+    if(_HeapSize==1 || _HeapSize==0)
+        return;
+
+    int start = Parent(_HeapSize);
+    for(int i = start; i>0; i++)
+        TrickleDown(i);
+}
+
+template<typename T>
+MinMaxHeap<T>::MinMaxHeap(T* p, int n)
+{
+    _HeapSize = n;
+    allocator(_HeapSize+1,0);
+    for(int i=0;i<_HeapSize;i++)
+        allocator[i+1]=p[i];
+    BuildTree();
 }
