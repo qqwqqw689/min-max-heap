@@ -258,7 +258,13 @@ void MinMaxHeap<T>::BubbleUp(int i)
 {
     if(Level(i)&1) // max-level
     {
-
+        if(HasParent(i) && allocator[i] < allocator[Parent(i)])
+        {
+            std::swap(allocator[i], allocator[Parent(i)]);
+            BubbleUpMax(Parent(i)]);
+        }
+        else
+            BubbleUpMin(i);
     }
     else // min-level
     {
