@@ -2,6 +2,7 @@
 #include <cmath>
 #include <vector>
 #include <utility>
+#include <limits>
 
 #define LeftChild(i) i<<1
 #define RightChild(i) i<<1 + 1
@@ -36,6 +37,8 @@ private:
     MinMaxHeap(T* p, int n); // n : number of elements in array
 public:
     void TrickleDown(int i);
+    T GetMax();
+    T GetMin();
 };
 
 template<typename T>
@@ -162,4 +165,36 @@ MinMaxHeap<T>::MinMaxHeap(T* p, int n)
     for(int i=0;i<_HeapSize;i++)
         allocator[i+1]=p[i];
     BuildTree();
+}
+
+template<typename T>
+T MinMaxHeap<T>::GetMin()
+{
+    if(_HeapSize==0)
+    {
+        std::cout << "The heap is empty"
+                  << "The maximum possible value returned" << std::endl;
+        return std::numeric_limits<T>::max();
+    }
+
+    return allocator[1];
+}
+
+template<typename T>
+T MinMaxHeap<T>::GetMax()
+{
+    if(_HeapSize==0)
+    {
+        std::cout << "The heap is empty"
+                  << "The minimum possible value returned" << std::endl;
+        return std::numeric_limits<T>::lowest();
+    }
+
+    if(_HeapSize==1)
+        return allocator[1];
+    
+    if(_HeapSize==2)
+        return allocator[2];
+
+    return allocator[1]>allocator[2] ? allocator[1] : allocator[2];
 }
