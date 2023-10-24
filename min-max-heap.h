@@ -3,6 +3,8 @@
 #include <vector>
 #include <utility>
 #include <limits>
+#include <queue>
+#include <iostream>
 
 #define LeftChild(i) i<<1
 #define RightChild(i) i<<1 + 1
@@ -21,6 +23,7 @@
 #define HasRightRightChild(i) RightRightChild(i)<=_HeapSize
 #define HasChildren(i) LeftChild(i)<=_HeapSize || RightChild(i)<=_HeapSize
 #define HasParent(i) 1<=Parent(i)
+#define HasGrandParent(i) 1<=GrandParent(i)
 
 // values stored at nodes on even levels are smaller than or equal to the values
 // stored at their descendants
@@ -35,10 +38,10 @@ private:
     void TrickleDownMin(int i);
     void TrickleDownMax(int i);
     void BubbleUp(int i);
-    void BubbleUpMax();
-    void BubbleUpMin();
+    void BubbleUpMax(int i);
+    void BubbleUpMin(int i);
     void BuildTree();
-    MinMaxHeap(T* p, int n); // n : number of elements in array
+    
 public:
     void TrickleDown(int i);
     T GetMax();
@@ -46,6 +49,7 @@ public:
     void DeleteMin();
     void DeleteMax();
     void insert(T t);
+    MinMaxHeap(T* p, int n); // n : number of elements in array
 };
 
 template<typename T>
@@ -72,35 +76,35 @@ void MinMaxHeap<T>::TrickleDownMin(int i)
                         std::vector<std::pair<int,T>>,
                         decltype(my_comp)> pq {my_comp};
         if(HasLeftChild(i))
-            pq.push({LeftChild(i),allocator(LeftChild(i))});
+            pq.push({LeftChild(i),allocator[LeftChild(i)]});
         if(HasRightChild(i))
-            pq.push({RightChild(i),allocator(RightChild(i))});
+            pq.push({RightChild(i),allocator[RightChild(i)]});
         if(HasLeftLeftChild(i))
-            pq.push({LeftLeftChild(i),allocator(LeftLeftChild(i))});
+            pq.push({LeftLeftChild(i),allocator[LeftLeftChild(i)]});
         if(HasLeftRightChild(i))
-            pq.push({LeftRightChild(i),allocator(LeftRightChild(i))});
+            pq.push({LeftRightChild(i),allocator[LeftRightChild(i)]});
         if(HasRightLeftChild(i))
-            pq.push({RightLeftChild(i),allocator(RightLeftChild(i))});
+            pq.push({RightLeftChild(i),allocator[RightLeftChild(i)]});
         if(HasRightChild(i))
-            pq.push({RightRightChild(i),allocator(RightRightChild(i))});
+            pq.push({RightRightChild(i),allocator[RightRightChild(i)]});
         
         const auto& z = pq.top();
         int MinIndex = z.first;
 
         if(Parent(MinIndex)!=i) // is a grandchild
         {
-            if(allocator(MinIndex) < allocator(i))
+            if(allocator[MinIndex] < allocator[i])
             {
-                std::swap(allocator(MinIndex),allocator(i));
-                if(allocator(MinIndex) > allocator(Parent(MinIndex)))
-                    std::swap(allocator(MinIndex),allocator(Parent(MinIndex)));
+                std::swap(allocator[MinIndex],allocator[i]);
+                if(allocator[MinIndex] > allocator[Parent(MinIndex)])
+                    std::swap(allocator[MinIndex],allocator[Parent(MinIndex)]);
                 TrickleDownMin(MinIndex);
             }
         }
         else // is a child
         {
-            if(allocator(MinIndex) < allocator(i))
-                std::swap(allocator(MinIndex),allocator(i));
+            if(allocator[MinIndex] < allocator[i])
+                std::swap(allocator[MinIndex],allocator[i]);
         }
     }
 }
@@ -120,35 +124,35 @@ void MinMaxHeap<T>::TrickleDownMax(int i)
                         std::vector<std::pair<int,T>>,
                         decltype(my_comp)> pq {my_comp};
         if(HasLeftChild(i))
-            pq.push({LeftChild(i),allocator(LeftChild(i))});
+            pq.push({LeftChild(i),allocator[LeftChild(i)]});
         if(HasRightChild(i))
-            pq.push({RightChild(i),allocator(RightChild(i))});
+            pq.push({RightChild(i),allocator[RightChild(i)]});
         if(HasLeftLeftChild(i))
-            pq.push({LeftLeftChild(i),allocator(LeftLeftChild(i))});
+            pq.push({LeftLeftChild(i),allocator[LeftLeftChild(i)]});
         if(HasLeftRightChild(i))
-            pq.push({LeftRightChild(i),allocator(LeftRightChild(i))});
+            pq.push({LeftRightChild(i),allocator[LeftRightChild(i)]});
         if(HasRightLeftChild(i))
-            pq.push({RightLeftChild(i),allocator(RightLeftChild(i))});
+            pq.push({RightLeftChild(i),allocator[RightLeftChild(i)]});
         if(HasRightChild(i))
-            pq.push({RightRightChild(i),allocator(RightRightChild(i))});
+            pq.push({RightRightChild(i),allocator[RightRightChild(i)]});
         
         const auto& z = pq.top();
         int MaxIndex = z.first;
 
         if(Parent(MaxIndex)!=i) // is a grandchild
         {
-            if(allocator(MaxIndex) > allocator(i))
+            if(allocator[MaxIndex] > allocator[i])
             {
-                std::swap(allocator(MaxIndex),allocator(i));
-                if(allocator(MaxIndex) < allocator(Parent(MaxIndex)))
-                    std::swap(allocator(MaxIndex),allocator(Parent(MaxIndex)));
+                std::swap(allocator[MaxIndex],allocator[i]);
+                if(allocator[MaxIndex] < allocator[Parent(MaxIndex)])
+                    std::swap(allocator[MaxIndex],allocator[Parent(MaxIndex)]);
                 TrickleDownMax(MaxIndex);
             }
         }
         else // is a child
         {
-            if(allocator(MaxIndex) > allocator(i))
-                std::swap(allocator(MaxIndex),allocator(i));
+            if(allocator[MaxIndex] > allocator[i])
+                std::swap(allocator[MaxIndex],allocator[i]);
         }
     }
 }
@@ -160,7 +164,7 @@ void MinMaxHeap<T>::BuildTree()
         return;
 
     int start = Parent(_HeapSize);
-    for(int i = start; i>0; i++)
+    for(int i = start; i>0; i--)
         TrickleDown(i);
 }
 
@@ -168,9 +172,9 @@ template<typename T>
 MinMaxHeap<T>::MinMaxHeap(T* p, int n)
 {
     _HeapSize = n;
-    allocator(_HeapSize+1,0);
+    allocator.push_back(0);
     for(int i=0;i<_HeapSize;i++)
-        allocator[i+1]=p[i];
+        allocator.push_back(p[i]);
     BuildTree();
 }
 
@@ -211,7 +215,7 @@ void MinMaxHeap<T>::DeleteMin()
 {
     if(_HeapSize==0)
     {
-        std::cout << "The heap is empty, operation aborted"
+        std::cout << "The heap is empty, operation aborted";
         return;
     }
 
@@ -232,7 +236,7 @@ void MinMaxHeap<T>::DeleteMax()
 {
     if(_HeapSize==0)
     {
-        std::cout << "The heap is empty, operation aborted"
+        std::cout << "The heap is empty, operation aborted";
         return;
     }
 
@@ -254,6 +258,32 @@ void MinMaxHeap<T>::DeleteMax()
 }
 
 template<typename T>
+void MinMaxHeap<T>::BubbleUpMin(int i)
+{
+    if(HasGrandParent(i))
+    {
+        if(allocator[i]<allocator[GrandParent(i)])
+        {
+            std::swap(allocator[i],GrandParent(i));
+            BubbleUpMin(GrandParent(i));
+        }
+    }
+}
+
+template<typename T>
+void MinMaxHeap<T>::BubbleUpMax(int i)
+{
+    if(HasGrandParent(i))
+    {
+        if(allocator[i]>allocator[GrandParent(i)])
+        {
+            std::swap(allocator[i],GrandParent(i));
+            BubbleUpMax(GrandParent(i));
+        }
+    }
+}
+
+template<typename T>
 void MinMaxHeap<T>::BubbleUp(int i)
 {
     if(Level(i)&1) // max-level
@@ -261,7 +291,7 @@ void MinMaxHeap<T>::BubbleUp(int i)
         if(HasParent(i) && allocator[i] < allocator[Parent(i)])
         {
             std::swap(allocator[i], allocator[Parent(i)]);
-            BubbleUpMax(Parent(i)]);
+            BubbleUpMax(Parent(i));
         }
         else
             BubbleUpMin(i);
@@ -271,7 +301,7 @@ void MinMaxHeap<T>::BubbleUp(int i)
         if(HasParent(i) && allocator[i] > allocator[Parent(i)])
         {
             std::swap(allocator[i], allocator[Parent(i)]);
-            BubbleUpMax(Parent(i)]);
+            BubbleUpMax(Parent(i));
         }
         else
             BubbleUpMin(i);
@@ -279,9 +309,10 @@ void MinMaxHeap<T>::BubbleUp(int i)
 }
 
 template<typename T>
-void MinMaxHeap<T>::insert()
+void MinMaxHeap<T>::insert(T t)
 {
-    allocator.push_back(T t);
+    allocator.push_back(t);
     _HeapSize++;
     int i = _HeapSize;
+    BubbleUp(i);
 }
