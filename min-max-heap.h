@@ -85,7 +85,7 @@ void MinMaxHeap<T>::TrickleDownMin(int i)
             pq.push({LeftRightChild(i),allocator[LeftRightChild(i)]});
         if(HasRightLeftChild(i))
             pq.push({RightLeftChild(i),allocator[RightLeftChild(i)]});
-        if(HasRightChild(i))
+        if(HasRightRightChild(i))
             pq.push({RightRightChild(i),allocator[RightRightChild(i)]});
         
         const auto& z = pq.top();
@@ -133,7 +133,7 @@ void MinMaxHeap<T>::TrickleDownMax(int i)
             pq.push({LeftRightChild(i),allocator[LeftRightChild(i)]});
         if(HasRightLeftChild(i))
             pq.push({RightLeftChild(i),allocator[RightLeftChild(i)]});
-        if(HasRightChild(i))
+        if(HasRightRightChild(i))
             pq.push({RightRightChild(i),allocator[RightRightChild(i)]});
         
         const auto& z = pq.top();
