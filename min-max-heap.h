@@ -20,6 +20,7 @@
 #define HasRightLeftChild(i) RightLeftChild(i)<=_HeapSize
 #define HasRightRightChild(i) RightRightChild(i)<=_HeapSize
 #define HasChildren(i) LeftChild(i)<=_HeapSize || RightChild(i)<=_HeapSize
+#define HasParent(i) 1<=Parent(i)
 
 // values stored at nodes on even levels are smaller than or equal to the values
 // stored at their descendants
@@ -33,12 +34,18 @@ private:
 
     void TrickleDownMin(int i);
     void TrickleDownMax(int i);
+    void BubbleUp(int i);
+    void BubbleUpMax();
+    void BubbleUpMin();
     void BuildTree();
     MinMaxHeap(T* p, int n); // n : number of elements in array
 public:
     void TrickleDown(int i);
     T GetMax();
     T GetMin();
+    void DeleteMin();
+    void DeleteMax();
+    void insert(T t);
 };
 
 template<typename T>
@@ -197,4 +204,78 @@ T MinMaxHeap<T>::GetMax()
         return allocator[2];
 
     return allocator[1]>allocator[2] ? allocator[1] : allocator[2];
+}
+
+template<typename T>
+void MinMaxHeap<T>::DeleteMin()
+{
+    if(_HeapSize==0)
+    {
+        std::cout << "The heap is empty, operation aborted"
+        return;
+    }
+
+    if(_HeapSize==1)
+    {
+        _HeapSize=0;
+        return;
+    }
+    
+    T temp = allocator[_HeapSize];
+    _HeapSize--;
+    allocator[1] = temp;
+    TrickleDown(1);
+}
+
+template<typename T>
+void MinMaxHeap<T>::DeleteMax()
+{
+    if(_HeapSize==0)
+    {
+        std::cout << "The heap is empty, operation aborted"
+        return;
+    }
+
+    if(_HeapSize==1)
+    {
+        _HeapSize=0;
+        return;
+    }
+    
+    if(_HeapSize==2)
+    {
+        _HeapSize=1;
+    }
+
+    int MaxIndex = allocator[1]>allocator[2] ? 1 : 2;
+    allocator[MaxIndex] = allocator[_HeapSize];
+    _HeapSize--;
+    TrickleDown(MaxIndex);
+}
+
+template<typename T>
+void MinMaxHeap<T>::BubbleUp(int i)
+{
+    if(Level(i)&1) // max-level
+    {
+
+    }
+    else // min-level
+    {
+        if(HasParent(i) && allocator[i] > allocator[Parent(i)])
+        {
+            std::swap(allocator[i], allocator[Parent(i)]);
+            BubbleUpMax(Parent(i)]);
+        }
+        else
+            BubbleUpMin(i);
+    }
+}
+
+template<typename T>
+void MinMaxHeap<T>::insert()
+{
+    allocator.push_back(T t);
+    _HeapSize++;
+    int i = _HeapSize;
 }
