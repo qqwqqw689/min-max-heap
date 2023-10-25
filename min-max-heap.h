@@ -6,15 +6,15 @@
 #include <queue>
 #include <iostream>
 
-#define LeftChild(i) i<<1
-#define RightChild(i) i<<1 + 1
-#define LeftLeftChild(i) i<<2
-#define LeftRightChild(i) i<<2 + 1
-#define RightLeftChild(i) i<<2 + 2
-#define RightRightChild(i) i<<1 + 3
-#define Parent(i) i>>1
-#define GrandParent(i) i>>2
-#define Level(i) int(std::log2(i))
+#define LeftChild(i) (i<<1)
+#define RightChild(i) ((i<<1) + 1)
+#define LeftLeftChild(i) (i<<2)
+#define LeftRightChild(i) ((i<<2) + 1)
+#define RightLeftChild(i) ((i<<2) + 2)
+#define RightRightChild(i) ((i<<2) + 3)
+#define Parent(i) (i>>1)
+#define GrandParent(i) (i>>2)
+#define Level(i) (int(std::log2(i)))
 #define HasLeftChild(i) LeftChild(i)<=_HeapSize
 #define HasRightChild(i) RightChild(i)<=_HeapSize
 #define HasLeftLeftChild(i) LeftLeftChild(i)<=_HeapSize
@@ -55,7 +55,7 @@ public:
 template<typename T>
 void MinMaxHeap<T>::TrickleDown(int i)
 {
-    if(Level(i)&1)
+    if(Level(i) & 1)
         TrickleDownMax(i);
     else
         TrickleDownMin(i);
@@ -206,8 +206,9 @@ T MinMaxHeap<T>::GetMax()
     
     if(_HeapSize==2)
         return allocator[2];
-
-    return allocator[1]>allocator[2] ? allocator[1] : allocator[2];
+    for(auto p: allocator)
+        std::cout << p << std::endl;
+    return allocator[2]>allocator[3] ? allocator[2] : allocator[3];
 }
 
 template<typename T>
@@ -251,7 +252,7 @@ void MinMaxHeap<T>::DeleteMax()
         _HeapSize=1;
     }
 
-    int MaxIndex = allocator[1]>allocator[2] ? 1 : 2;
+    int MaxIndex = allocator[2]>allocator[3] ? 2 : 3;
     allocator[MaxIndex] = allocator[_HeapSize];
     _HeapSize--;
     TrickleDown(MaxIndex);
@@ -264,7 +265,7 @@ void MinMaxHeap<T>::BubbleUpMin(int i)
     {
         if(allocator[i]<allocator[GrandParent(i)])
         {
-            std::swap(allocator[i],GrandParent(i));
+            std::swap(allocator[i],allocator[GrandParent(i)]);
             BubbleUpMin(GrandParent(i));
         }
     }
@@ -277,7 +278,7 @@ void MinMaxHeap<T>::BubbleUpMax(int i)
     {
         if(allocator[i]>allocator[GrandParent(i)])
         {
-            std::swap(allocator[i],GrandParent(i));
+            std::swap(allocator[i],allocator[GrandParent(i)]);
             BubbleUpMax(GrandParent(i));
         }
     }
