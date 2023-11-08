@@ -206,8 +206,7 @@ T MinMaxHeap<T>::GetMax()
     
     if(_HeapSize==2)
         return allocator[2];
-    for(auto p: allocator)
-        std::cout << p << std::endl;
+
     return allocator[2]>allocator[3] ? allocator[2] : allocator[3];
 }
 
@@ -292,10 +291,10 @@ void MinMaxHeap<T>::BubbleUp(int i)
         if(HasParent(i) && allocator[i] < allocator[Parent(i)])
         {
             std::swap(allocator[i], allocator[Parent(i)]);
-            BubbleUpMax(Parent(i));
+            BubbleUpMin(Parent(i));
         }
         else
-            BubbleUpMin(i);
+            BubbleUpMax(i);
     }
     else // min-level
     {
